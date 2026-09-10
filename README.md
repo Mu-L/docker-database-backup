@@ -58,8 +58,10 @@ Configure each database container by specifying labels. Every label must be pref
 | `password` | (none) | Login password |
 | `port` | `auto` | Port (inside container). Possible values: `auto` or a valid port number. Auto gets the default port corresponding to the type. |
 | `skip_ssl` | `true` | Disable implicit SSL/TLS connection MySQL/MariaDB server |
-| `compress` | `false` | Compress SQL Dump with gzip |
-| `compression_level` | `6` | Gzip compression level (1-9) |
+| `compress` | `false` | Compress SQL Dump |
+| `compression_algorithm` | `gzip` | Algorithm used to compress the dump. Possible values: `gzip`, `zstd` |
+| `gzip_compression_level` | `6` | Gzip compression level (1-9). `compression_level` is kept as an alias for backwards compatibility. |
+| `zstd_compression_level` | `3` | Zstandard compression level (1-19) |
 | `encrypt` | `false` | Encrypt SQL Dump with AES |
 | `encryption_key` | (none) | Key/Passphrase used to encrypt |
 | `retention_policy` | `none` | Type of retention policy used to cleanup dump files. Possible values: `none`, `simple`, `all` See below for more info. |
@@ -97,7 +99,7 @@ You can choose one of the following retention policies for each container. All d
 Example docker-compose.yml:
 
 ```yml
-version: '3.8'
+version: "3.8"
 
 services:
   db-backup: # backup service
@@ -134,7 +136,6 @@ To decrypt dump files that were encrypted with this service, you can use the fol
 ```bash
 docker run --rm -v /path/to/dump:/dump ghcr.io/jan-di/database-backup decrypt.py /dump/encrypted-dump.sql.aes /dump/decrypted-dump.sql your-encryption-key
 ```
-
 
 ## Credits
 

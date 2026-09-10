@@ -6,6 +6,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Support for Zstandard (`zstd`) compression via the `compression_algorithm` label
+- Separate compression level labels `gzip_compression_level` and `zstd_compression_level`
+
+### Changed
+- `compression_level` label is now a backwards-compatible alias for `gzip_compression_level`
+
 ## [1.1.0] - 2026-01-08
 
 ### Added

@@ -41,7 +41,7 @@ class Backup:
                 containers = [x for x in containers if x.name in container_whitelist]
 
         # Process all container, but not with the name in the blacklist
-        if self._config.blacklist is not None:   
+        if self._config.blacklist is not None:
             container_blacklist = [x.strip() for x in self._config.blacklist.split(',') if x]
             if len(container_blacklist) > 0:
                 logging.info(f"Container blacklist is active! The following names will be not processed: {container_blacklist}")
@@ -180,28 +180,50 @@ class Backup:
                         logging.error("> FAILED: Dump file is empty!")
                         failed = True
 
-                # Compress pump
+                # Compress dump
                 if not failed and database.compress:
-                    logging.debug(
-                        f"> Compressing dump (level: {database.compression_level})"
-                    )
-                    compressed_dump_file = f"{dump_file}.gz"
+                    algorithm = database.compression_algorithm
 
-                    try:
-                        if os.path.exists(compressed_dump_file):
-                            os.remove(compressed_dump_file)
-
-                        subprocess.check_output(
-                            f'gzip -{database.compression_level} "{dump_file}"',
-                            shell=True,
+                    if algorithm == "gzip":
+                        compression_level = database.gzip_compression_level
+                        compressed_dump_file = f"{dump_file}.gz"
+                        compression_command = (
+                            f'gzip -{compression_level} "{dump_file}"'
                         )
-                    except Exception as e:
+                    elif algorithm == "zstd":
+                        compression_level = database.zstd_compression_level
+                        compressed_dump_file = f"{dump_file}.zst"
+                        # zstd keeps the source file by default; --rm mirrors gzip
+                        compression_command = (
+                            f'zstd --rm -{compression_level} "{dump_file}"'
+                        )
+                    else:
                         logging.error(
-                            f"> FAILED: Error while compressing: {e}")
+                            f"> FAILED: Unknown compression algorithm '{algorithm}'"
+                        )
                         failed = True
 
-                    processed_dump_size = os.path.getsize(compressed_dump_file)
-                    dump_file = compressed_dump_file
+                    if not failed:
+                        logging.debug(
+                            f"> Compressing dump ({algorithm}, level: {compression_level})"
+                        )
+
+                        try:
+                            if os.path.exists(compressed_dump_file):
+                                os.remove(compressed_dump_file)
+
+                            subprocess.check_output(
+                                compression_command, shell=True
+                            )
+                        except Exception as e:
+                            logging.error(
+                                f"> FAILED: Error while compressing: {e}")
+                            failed = True
+
+                    if not failed:
+                        processed_dump_size = os.path.getsize(
+                            compressed_dump_file)
+                        dump_file = compressed_dump_file
 
                 # Encrypt dump
                 if not failed and database.encrypt and dump_size > 0:

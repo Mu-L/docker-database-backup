@@ -14,7 +14,7 @@ ENV PYTHONFAULTHANDLER=1 \
 # Install apt packages
 RUN set -eux; \
     apt-get update; \
-    apt-get install -y mariadb-client postgresql-client-18 tzdata; \
+    apt-get install -y mariadb-client postgresql-client-18 tzdata zstd; \
     apt-get clean; \
     rm -rf /var/lib/apt/lists/*; \
     mkdir -p /dump

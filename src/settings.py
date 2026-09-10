@@ -29,7 +29,10 @@ LABEL_DEFAULTS = {
     "port": "auto",  # via type
     "skip_ssl": "true",
     "compress": "false",
-    "compression_level": "6",
+    "compression_algorithm": "gzip",
+    "compression_level": "auto",  # backwards-compatible alias for gzip_compression_level
+    "gzip_compression_level": "6",
+    "zstd_compression_level": "3",
     "encrypt": "false",
     "encryption_key": "",
     "retention_policy": "none",

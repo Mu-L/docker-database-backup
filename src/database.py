@@ -114,7 +114,12 @@ class Database:
         self.port = int(self.port)
         self.skip_ssl = distutils.util.strtobool(self.skip_ssl)
         self.compress = distutils.util.strtobool(self.compress)
-        self.compression_level = int(self.compression_level)
+        self.compression_algorithm = self.compression_algorithm.lower()
+        # `compression_level` is a backwards-compatible alias for `gzip_compression_level`
+        if self.compression_level != "auto":
+            self.gzip_compression_level = self.compression_level
+        self.gzip_compression_level = int(self.gzip_compression_level)
+        self.zstd_compression_level = int(self.zstd_compression_level)
         self.encrypt = distutils.util.strtobool(self.encrypt)
         self.dump_timestamp = distutils.util.strtobool(self.dump_timestamp)
         self.retention_min_count = max(int(self.retention_min_count), 1)

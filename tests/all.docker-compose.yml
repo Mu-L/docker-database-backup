@@ -1,6 +1,6 @@
 services:
   db-encrypt-compress:
-    image: docker.io/mariadb:11.14 # current LTS
+    image: docker.io/mariadb:12.3 # current LTS
     environment:
       MARIADB_ROOT_PASSWORD: secret
     labels:
@@ -10,3 +10,15 @@ services:
       - jan-di.database-backup.compress=true
       - jan-di.database-backup.encrypt=true
       - jan-di.database-backup.encryption_key=secretkey
+
+  db-zstd-compress:
+    image: docker.io/mariadb:12.3 # current LTS
+    environment:
+      MARIADB_ROOT_PASSWORD: secret
+    labels:
+      - jan-di.database-backup.enable=true
+      - jan-di.database-backup.type=mariadb
+      - jan-di.database-backup.password=secret
+      - jan-di.database-backup.compress=true
+      - jan-di.database-backup.compression_algorithm=zstd
+      - jan-di.database-backup.zstd_compression_level=10
